@@ -1,0 +1,23 @@
+.error-box {
+    background-color: lightcoral;
+    border: 1px solid red;
+}
+
+.warning-box {
+    background-color: lightyellow;
+    border: 1px solid yellow;
+}
+
+.success-box {
+    background-color: lightgreen;
+    border: 1px solid green;
+}
+
+.gray-border {
+    border: 1px solid gray;
+    padding: 10px;
+}
+
+.panel-view {
+    border: 1px solid gray; width: 75%; height: 450px; margin: auto; overflow: auto;
+}

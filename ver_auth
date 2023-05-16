@@ -1,0 +1,28 @@
+<?php
+
+    session_start();
+
+    if(!isset($_SESSION["codigocliente"])) {
+        header("Location: login.php");
+        die();
+    } else {
+        
+        $auth_sql = "SELECT codigocliente FROM tblcliente WHERE codigocliente = '". $_SESSION["codigocliente"] ."'";
+        $auth_result = $con->query($auth_sql);
+
+        if(!$auth_result->fetch_array(MYSQLI_ASSOC)) {
+            ?>
+                <body style='text-align: center;'>
+                    <br>
+                    <div style='background-color: rgb(255, 142, 142); border: 1px solid red; margin: auto; padding: 5px; width: fit-content;'>
+                        <b>Erro: Acesso negado, por favor entre com sua conta para acessar o sistema.</b>
+                    </div>
+                    <br>
+                    <a href='login.php?sair=1'>Voltar</a>
+                </body>
+            <?php
+            die();
+        }
+    }
+
+?>
