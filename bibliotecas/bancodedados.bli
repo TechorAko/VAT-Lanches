@@ -1,0 +1,111 @@
+<?php
+
+class bancodedados {
+
+    // Host, Usuário, Senha, Banco de Dados e Conexão.
+
+    private $host;
+    private $uname;
+    private $pwd;
+    private $database;
+    public $con;
+
+    public $tabelas; // Nome das tabelas disponíveis no banco de dados.
+    public $insert_id;
+
+    function __construct($host, $uname, $pwd, $database) { // Construtor do objeto.
+        // Ao criar o objeto, a conexão será feita.
+        $this->host     = $host;
+        $this->uname    = $uname;
+        $this->pwd      = $pwd;
+        $this->database = $database;
+        $this->con      = mysqli_connect($host, $uname, $pwd, $database);
+        $con            = $this->con;
+
+        $con->set_charset('utf8'); // Especifica o Charset.
+        if($con->connect_error) { die("Falha ao realizar conexão: " . $con->connect_error); } // Se houver algum erro na conexão.
+
+        // Gerando as tabelas
+        $sql = $con->query("SHOW TABLES");
+        while ($linha = mysqli_fetch_array($sql, MYSQLI_NUM)) { $this->tabelas[] = $linha[0]; }
+        
+    }
+
+    function error_msg($sql) { echo "Erro: " . $sql . "<br>" . $this->$con->error; } // Mensagem de erro.
+
+    function fetch_multiarray($sql, $mode = MYSQLI_BOTH, $array_value = NULL) {
+        // Essa função tem em mente retornar uma matriz (ou array multidimensional) todas as linhas que forem forem retornadas do mysqli_fetch-array().
+        $query = $this->con->query($sql); // Define o comando a ser utilizado.
+        while ($linha = mysqli_fetch_array($query, $mode))  { // Enquanto houver linhas, será buscado. Obs: $mode está como padrão para MYSQLI_BOTH, o que significa que retornará um array com ambos os registros numerados e nomeados.
+            if($array_value == NULL) { $array[] = $linha; } // Caso houver alguma especificação de qual valor dentro da linha for pego. (Para casos onde você queira pegar o nome por a caso, nunca surgiu essa necessidade, magina.)
+            else { $array[] = $linha[$array_value]; } // Queria na verdade fazer isso sem condicional, mas não soube como botar essa linha de comando em palavras.
+        }
+        if(isset($array)) { return $array; } else { return "Nenhum registro encontrado."; } // Verifica se algum valor foi de fato encontrado, caso o contrário retornará um aviso de que não foram encontrados registros.
+    }
+
+    function descrever($tabela) {
+        $sql = "SHOW FIELDS FROM $tabela";
+        return $this->fetch_multiarray($sql, MYSQLI_ASSOC);
+    }
+
+    function inserir($table_name, $values) { // Atributos e valores DEVEM ser arrays de dados para que possam ser compatíveis universalmente.
+        $attributes_string = "`" . implode('`,`', array_keys($values)) . "`"; // Converte o array de atributos em uma string.
+        $values_string = "'" . implode("','", $values) . "'"; // Converte o array de valores em uma string.
+        
+        // Insere os dados na tabela
+        $sql = "INSERT INTO $table_name ($attributes_string) VALUES ($values_string)";
+        if($this->con->query($sql) === TRUE) {
+            $this->insert_id = $this->con->insert_id;
+            return "Registro inserido com sucesso!<br>";
+        } else { $this->error_msg($sql); } // Retorna um feedback se requisitado.
+    }
+
+    function alterar($tabela, $valores, $onde) {
+        // Montar a lista de atributos e valores a serem atualizados
+        foreach ($valores as $atributo => $valor) { $set[] = "`$atributo` = '$valor'"; } // Converte no formato MYSQL.
+        $set = implode(", ", $set); // Então converte em string para o uso no comando.
+        foreach ($onde as $referencia => $pesquisa) { $where[] = "$referencia = '$pesquisa'"; } // Converte no formato MYSQL.
+        $where = implode(" AND ", $where); // Então converte em string para o uso no comando.
+
+        $sql = "UPDATE $tabela SET $set WHERE $where";
+        if($this->con->query($sql) === TRUE){ return "Registro alterado com sucesso!"; } else { $this->error_msg($sql); }
+    }
+
+    function excluir($tabela, $onde) {
+        foreach ($onde as $referencia => $pesquisa) { $where[] = "$referencia = '$pesquisa'"; } // Converte no formato MYSQL.
+        $where = implode(" AND ", $where); // Então converte em string para o uso no comando.
+
+        $sql = "DELETE FROM $tabela WHERE $where"; // Comando para deletar o registro baseado em um valor dentro do registro.
+        if($this->con->query($sql) === TRUE) { return "Registro excluído com sucesso!<br>"; } else { $this->error_msg($sql); } // Retorna um feedback se requisitado.
+    }
+
+    function buscar($tabelas, $atributos = "*", $pesquisa = NULL, $como = FALSE) {
+        $tabelas = is_array($tabelas) ? "`". implode(", ", $tabelas) ."`" : $tabelas ;
+        $atributos = is_array($atributos) ?  implode(', ', $atributos) : $atributos; // Se for array, converte o array de atributos em uma string.
+        $sql = "SELECT ". $atributos ." FROM $tabelas";
+
+        if($pesquisa != NULL) { // Verifica se há uma pesquisa.
+            foreach ($pesquisa as $referencia => $pesquisa) {
+                $where[] = $como ? "$referencia LIKE '%$pesquisa%'" : "$referencia = '$pesquisa'"; // Verifica se o modo de pesquisa está COMO ou IGUAL.
+            } // Converte no formato MYSQL.
+            $where = implode(" AND ", $where); // Então converte em string para o uso no comando.
+            $sql .= " WHERE $where"; // E se todo processo ocorrer bem, a pesquisa será incluida.
+        }
+        return $this->fetch_multiarray($sql, MYSQLI_ASSOC);
+    }
+
+}
+
+function gerar_tabela($data) {
+    if(is_array($data) == TRUE) { // Verifica se $data recebeu algum registro, caso o contrário, ele irá exibir uma mensagem de erro ou que nenhum registro foi encontrado.
+        foreach($data as $linha) {
+            echo "  <tr>\n";
+                foreach($linha as $registro) { echo "      <td>". $registro ."</td>\n"; }
+            echo "  </tr>\n";
+        }
+    } else {
+        echo "  <tr>\n";
+        echo "      <td colspan=100>". $data ."</td>\n";
+        echo "  </tr>\n";
+    }
+}
