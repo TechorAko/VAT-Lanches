@@ -1,6 +1,0 @@
-<?php
-
-    $vatlanches = new bancodedados('localhost', 'root', '', 'vatlanches');
-    $con = $vatlanches->con;
-
-?>
