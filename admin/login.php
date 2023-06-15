@@ -2,11 +2,24 @@
 
     session_start();
 
-    if(isset($_REQUEST["sair"])) {
+    if(isset($_GET["error"])) {
+        switch($_GET["error"]) {
+            case "forbidden":
+                $alert = ["content" => "<b>Erro:</b> Acesso negado, você não está logado. Por favor, entre com a sua conta.", "type" => "danger"];
+                break;
+            case "unauthorized":
+                $alert = ["content" => "<b>Erro:</b> Acesso negado, o usuário é inválido. Tente novamente com uma conta de administrador.", "type" => "danger"];
+            default: 
+        }
+    }
+
+    if(isset($_REQUEST["sair"]) && $_REQUEST["sair"] == 0) {
         session_unset();
         session_destroy();
-        header('Location: '. $_SERVER["PHP_SELF"]);
+        header('Location: '.$SERVER["PHP_SELF"].'?sair=1');
         die();
+    } else if (isset($_REQUEST["sair"]) && $_REQUEST["sair"] == 1) {
+        $alert = ["content" => "Você saiu da sua conta.", "type" => "warning"];
     }
 
     $login = "techorako";
@@ -14,38 +27,58 @@
 
     if(isset($_SESSION["user"]) && $_SESSION["user"] == $login) { header("Location: index.php"); die(); }
 
-    if(isset($_REQUEST["signin"])) {
+    if(isset($_POST["login"])) {
         if($_POST["login"] == $login && $_POST["pwd"] == $pwd) {
             $_SESSION["user"] = $_POST["login"];
             header("Location: ". $_SERVER["PHP_SELF"]);
             die();
-        } else { $error = "Usuário inválido. Por favor, tente novamente."; }
+        } else { $alert = ["content" => "<b>Erro:</b> Usuário inválido. Por favor, tente novamente", "context" => "danger"]; }
     }
 
 ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Entrar :: Administração - VAT Lanches</title>
+        <title>Entrar - VAT Lanches</title>
         <link rel="stylesheet" href="style.css">
         <meta charset="UTF-8">
+        <?php $header_block = TRUE; include '../bibliotecas/bootstrap.html'; ?>
     </head>
-    <body style="text-align: center;">
+    <body class="bg-lightgray">
         <?php include '../assets/header.php'; ?>
-        <br>
-        <form action="login.php" method="POST">
-            <fieldset style="margin: auto; width: 30%;">
-                <legend> Entre em sua conta </legend>
-                <div style="height: 50px;"></div>
-                <label>Login: </label><input type="text" name="login" maxlength="20" placeholder="Digite o seu login"><br>
-                <label>Senha: </label><input type="password" name="pwd" minlength="8" placeholder="Digite sua senha"><br>
-                <div style="height: 50px;"></div>
-                <input type="submit" name="signin" value="Entrar">
-            </fieldset>
-        </form>
+        
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-lg-4 bg-light my-lg-5 p-4">
+                    <div class="row justify-content-center">
+                        <h2>Olá, Administrador.</h2>
+                    </div>
+                    <div class="row justify-content-center">
+                        <p>Por favor, entre com sua conta.</p>
+                    </div>
+                    <form action="<?=$_SERVER['PHP_SELF']?>" method="POST">
+                        <div class="form-row my-4">
+                        <div class="col">
+                            <label for="login">Login:</label>
+                            <input type="text" class="form-control" id="email" placeholder="Digite o seu login" name="login" required>
+                        </div>
+                        </div>
+                        <div class="form-row my-4">
+                        <div class="col">
+                            <label for="pwsd">Senha:</label>
+                            <input type="password" class="form-control" id="pswd" placeholder="Digite a sua senha" name="pwd" required>
+                        </div>
+                        </div>
+                        <div class="form-row justify-content-center pt-5">
+                            <button type="submit" class="btn btn-primary">Entrar</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+                <div class="col-4"></div>
+        </div>
 
-        <p>Não é um administrator? Clique <a href="../login.php">aqui</a> para voltar ao site.</p>
-
-        <?php $footer_fixed = "fixed"; include '../assets/footer.php'; ?>
+        <?php $footer_fixed = TRUE; include '../assets/footer.php'; ?>
     </body>
 </html>

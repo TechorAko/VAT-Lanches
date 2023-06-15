@@ -28,68 +28,72 @@
         <title>Pedidos - Vat Lanches</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="style.css">
-        <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-        </style>
+        <?php include_once 'bibliotecas/bootstrap.html'; ?>
     </head>
-    <body style="text-align: center;">
-        <?php $header_tables = ["Encomendas" => "./", "Pedidos" => "pedidos.php", "Perfil" => "perfil.php?edit=1"]; include 'assets/header.php'; ?>
-            <br>
-                <div class="panel-view" style="height: 380px;">
-                    <table align="center">
-                        <tr>
-                            <th class="gray-border"> Data   </th>
-                            <th class="gray-border"> Itens  </th>
-                            <th class="gray-border"> Status </th>
-                            <th class="gray-border"> Opções </th>
-                        </tr>
-                        <?php
-                            $tblencomenda = $vatlanches->buscar("tblencomenda", "tblencomenda.*", ["tblencomenda.codigocliente" => $_SESSION["codigocliente"]]);
+    <body class="bg-lightgray">
+        <?php include 'assets/header.php'; ?>
+                <div class="container bg-light my-sm-4 p-5">
+                    <h1 class="d-flex justify-content-center mb-4">Pedidos</h1>
+                    <div class="table-responsive">
+                        <table class="table table-hover border border-muted">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col"> Data   </th>
+                                    <th scope="col"> Itens  </th>
+                                    <th scope="col"> Status </th>
+                                    <th scope="col"> Opções </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                    $tblencomenda = $vatlanches->buscar("tblencomenda", "tblencomenda.*", ["tblencomenda.codigocliente" => $_SESSION["codigocliente"]]);
 
-                            if(is_array($tblencomenda)) {
-                                foreach($tblencomenda as $linha_encomenda) { ?>
-                                    <form action="pedidos.php" method="POST">
-                                    <tr class="gray-border">
-                                        <input type="hidden" name="codigoencomenda" value="<?=$linha_encomenda["codigoencomenda"]?>">
-                                        <td class="gray-border"><?=$linha_encomenda["data"]?></td>
-                                        <td class="gray-border" style="padding: 0;">
-                                            <table>
-                                                <?php
+                                    if(is_array($tblencomenda)) {
+                                        foreach($tblencomenda as $linha_encomenda) { ?>
+                                            <form action="pedidos.php" method="POST">
+                                            <tr>
+                                                <input type="hidden" name="codigoencomenda" value="<?=$linha_encomenda["codigoencomenda"]?>">
+                                                <td><?=$linha_encomenda["data"]?></td>
+                                                <td style="padding: 0;">
+                                                    <table class="table">
+                                                        <tbody>
+                                                        <?php
 
-                                                    $sql = "SELECT tblproduto.descricao, tblitens.quantidade, tblproduto.preco FROM tblitens, tblproduto, tblencomenda WHERE tblitens.codigoencomenda = ". $linha_encomenda["codigoencomenda"] ." AND tblitens.codigoproduto = tblproduto.codigoproduto AND tblencomenda.codigoencomenda = tblitens.codigoencomenda";
-                                                    $tblitens = $vatlanches->fetch_multiarray($sql, MYSQLI_ASSOC);
+                                                            $sql = "SELECT tblproduto.descricao, tblitens.quantidade, tblproduto.preco FROM tblitens, tblproduto, tblencomenda WHERE tblitens.codigoencomenda = ". $linha_encomenda["codigoencomenda"] ." AND tblitens.codigoproduto = tblproduto.codigoproduto AND tblencomenda.codigoencomenda = tblitens.codigoencomenda";
+                                                            $tblitens = $vatlanches->fetch_multiarray($sql, MYSQLI_ASSOC);
 
-                                                    $preco = 0;
+                                                            $preco = 0;
 
-                                                    foreach($tblitens as $linha_itens) {
-                                                        ?> <tr> <?php
-                                                            foreach($linha_itens as $atributo => $item) { if($atributo == "preco") { $preco += $item * $linha_itens["quantidade"]; continue; }?>
-                                                                <td class="gray-border"><?=$item?></td>
-                                                            <?php }
-                                                        ?> </tr> <?php
-                                                    }
+                                                            foreach($tblitens as $linha_itens) {
+                                                                ?> <tr> <?php
+                                                                    foreach($linha_itens as $atributo => $item) { if($atributo == "preco") { $preco += $item * $linha_itens["quantidade"]; continue; }?>
+                                                                        <td class="gray-border"><?=$item?></td>
+                                                                    <?php }
+                                                                ?> </tr> <?php
+                                                            }
 
-                                                ?>
-                                                <tr>
-                                                    <th class="gray-border" colspan="3">R$<?=$preco?></th>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                        <td class="gray-border"><?=$linha_encomenda["status"]?></td>
-                                        <td class="gray-border" style="width: 150px;">
-                                            <input type="submit" name="cancel" value="Cancelar">
-                                        </td>
-                                    </tr>
-                                    </form>
-                                <?php }
-                            } else { ?><tr><td class="gray-border" colspan="100"><?=$tblencomenda?></td><?php }
-                        ?>
-                    </table>
+                                                        ?>
+                                                        </tbody>
+                                                        <tfoot>
+                                                            <tr>
+                                                                <th colspan="3">R$<?=$preco?></th>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </td>
+                                                <td><?=$linha_encomenda["status"]?></td>
+                                                <td style="width: 150px;">
+                                                    <button type="submit" class="btn btn-danger" name="cancel" value="1">Cancelar</button>
+                                                </td>
+                                            </tr>
+                                            </form>
+                                        <?php }
+                                    } else { ?><tr><td class="gray-border" colspan="100"><?=$tblencomenda?></td><?php }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            <br>
-        <?php $footer_fixed = 'fixed'; include 'assets/footer.php'; ?>
+        <?php include 'assets/footer.php'; ?>
     </body>
 </html>

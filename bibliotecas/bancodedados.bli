@@ -79,33 +79,53 @@ class bancodedados {
         if($this->con->query($sql) === TRUE) { return "Registro excluído com sucesso!<br>"; } else { $this->error_msg($sql); } // Retorna um feedback se requisitado.
     }
 
-    function buscar($tabelas, $atributos = "*", $pesquisa = NULL, $como = FALSE) {
-        $tabelas = is_array($tabelas) ? "`". implode(", ", $tabelas) ."`" : $tabelas ;
-        $atributos = is_array($atributos) ?  implode(', ', $atributos) : $atributos; // Se for array, converte o array de atributos em uma string.
-        $sql = "SELECT ". $atributos ." FROM $tabelas";
-
-        if($pesquisa != NULL) { // Verifica se há uma pesquisa.
-            foreach ($pesquisa as $referencia => $pesquisa) {
-                $where[] = $como ? "$referencia LIKE '%$pesquisa%'" : "$referencia = '$pesquisa'"; // Verifica se o modo de pesquisa está COMO ou IGUAL.
-            } // Converte no formato MYSQL.
-            $where = implode(" AND ", $where); // Então converte em string para o uso no comando.
-            $sql .= " WHERE $where"; // E se todo processo ocorrer bem, a pesquisa será incluida.
+    function buscar($tabelas, $atributos = "*", $pesquisa = NULL, $like = FALSE, $orderby = NULL, $groupby = NULL) {
+        // Verifica se o parâmetro tabela é um array
+        if (is_array($tabelas)) {
+            $tabelas = implode(', ', $tabelas);
         }
+
+        // Verifica se o parâmetro atributos é um array
+        if (is_array($atributos)) {
+            $atributos = implode(', ', $atributos);
+        }
+
+        // Monta a cláusula WHERE da consulta
+        $where = '';
+        if ($pesquisa) {
+            foreach ($pesquisa as $atributo => $valor) {
+                $valor = addslashes($valor);
+                $operator = $like && is_string($valor) ? "LIKE" : "=";
+                if(!strpos($valor, ".")) { $valor = "'".$valor."'"; $operator = "="; }
+                $where .= ($where ? ' AND ' : '') . "$atributo $operator $valor";
+            }
+            $where = "WHERE $where";
+        }
+
+        // Monta a cláusula ORDER BY da consulta
+        $order = '';
+        if ($orderby !== null) {
+            if (is_array($orderby)) {
+                $order = 'ORDER BY ';
+                foreach ($orderby as $atributo => $direcao) {
+                    $order .= "$atributo $direcao, ";
+                }
+                $order = rtrim($order, ', ');
+            } else {
+                $order = "ORDER BY $orderby";
+            }
+        }
+
+        // Monta a cláusula GROUP BY da consulta
+        $group = '';
+        if ($groupby !== null) {
+            $group = "GROUP BY $groupby";
+        }
+
+        // Monta a consulta completa
+        $sql = "SELECT $atributos FROM $tabelas $where $group $order";
+
         return $this->fetch_multiarray($sql, MYSQLI_ASSOC);
     }
 
-}
-
-function gerar_tabela($data) {
-    if(is_array($data) == TRUE) { // Verifica se $data recebeu algum registro, caso o contrário, ele irá exibir uma mensagem de erro ou que nenhum registro foi encontrado.
-        foreach($data as $linha) {
-            echo "  <tr>\n";
-                foreach($linha as $registro) { echo "      <td>". $registro ."</td>\n"; }
-            echo "  </tr>\n";
-        }
-    } else {
-        echo "  <tr>\n";
-        echo "      <td colspan=100>". $data ."</td>\n";
-        echo "  </tr>\n";
-    }
 }

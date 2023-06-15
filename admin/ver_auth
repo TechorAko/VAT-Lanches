@@ -21,4 +21,6 @@
         }
     }
 
+    if(str_contains($_SERVER["SERVER_NAME"], "localhost")) { $path = "http://". $_SERVER["SERVER_NAME"] ."/TechorAko/VAT-Lanches"; } else { $path = "http://". $_SERVER["SERVER_NAME"]; }
+
 ?>

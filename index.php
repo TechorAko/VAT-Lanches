@@ -6,7 +6,7 @@
 
     date_default_timezone_set("America/Fortaleza");
 
-    if(isset($_REQUEST["request"])) { $fails = 0;
+    if(isset($_POST["quantidade"])) {
         $insert_tblencomenda = [
             "codigocliente" => $_SESSION["codigocliente"],
             "data"          => date("Y-m-d H:i:s"),
@@ -24,8 +24,7 @@
             }
         }
 
-        $feedback["message"] = "Sua compra foi realizada com sucesso.";
-        $feedback["type"] = "success-box";
+        
     }
 
 ?>
@@ -35,47 +34,49 @@
         <title>Encomendas - Vat Lanches</title>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="style.css">
-        <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-        </style>
+        <?php include_once 'bibliotecas/bootstrap.html'; ?>
     </head>
-    <body style="text-align: center;">
-        <?php $header_tables = ["Encomendas" => "./", "Pedidos" => "pedidos.php", "Perfil" => "perfil.php?edit=1"]; include 'assets/header.php'; ?>
-        <br>
-        <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
-            <div class="panel-view">
-                <table align="center">
-                    <tr class="gray-border">
-                        <th class="gray-border"> Produto    </th>
-                        <th class="gray-border"> Categoria  </th>
-                        <th class="gray-border"> Preço      </th>
-                        <th class="gray-border"> quantidade </th>
-                    </tr>
-                    <?php $buscar = $vatlanches->buscar("tblproduto", "codigoproduto, descricao, categoria, preco");
-                        if(is_array($buscar)) {
-                            foreach($buscar as $linha) { ?>
-                                <tr class="gray-border">
-                                    <?php
-                                        foreach($linha as $atributo => $registro) { 
-                                                if($atributo == "codigoproduto") { continue; }
-                                                ?> <td class="gray-border"><?=$registro?></td> <?php
-                                        }
-                                    ?>
-                                    <td class="gray-border" style="width: 120px;">
-                                        <input type="number" name="quantidade[<?=$linha["codigoproduto"]?>]" min="0" value="0">
-                                    </td>
-                                </tr>
-                            <?php }
-                        } else { ?><tr><td class="gray-border" colspan="100"><?=$buscar?></td><?php }
-                    ?>
-                </table>
-            </div>
-            <br><input type="submit" name="request" value="Encomendar"> <input type="reset" value="Cancelar"><br>
-        </form>
-        <br>
-        <?php $footer_fixed = 'fixed'; include 'assets/footer.php'; ?>
+    <body class="bg-lightgray">
+        <?php include 'assets/header.php'; ?>
+        <div class="container bg-light my-sm-4 p-5">
+            <h1 class="d-flex justify-content-center mb-4">Cardápio</h1>
+            <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
+                <div class="row table-responsive">
+                    <table class="table table-hover border border-muted">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th> Produto    </th>
+                                <th> Categoria  </th>
+                                <th> Preço      </th>
+                                <th> quantidade </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $buscar = $vatlanches->buscar("tblproduto", "codigoproduto, descricao, categoria, preco");
+                                if(is_array($buscar)) {
+                                    foreach($buscar as $linha) { ?>
+                                        <tr>
+                                            <?php
+                                                foreach($linha as $atributo => $registro) { 
+                                                        if($atributo == "codigoproduto") { continue; }
+                                                        ?> <td><?=$registro?></td> <?php
+                                                }
+                                            ?>
+                                            <td style="width: 120px;">
+                                                <input type="number" class="form-control" name="quantidade[<?=$linha["codigoproduto"]?>]" min="0" value="0">
+                                            </td>
+                                        </tr>
+                                    <?php }
+                                } else { ?><tr><td colspan="100"><?=$buscar?></td><?php }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row d-flex justify-content-around">
+                    <button class="btn btn-primary" type="submit">Encomendar</button> <button class="btn btn-secondary" type="reset">Cancelar</button>
+                </div>
+            </form>
+        </div>
+        <?php include 'assets/footer.php'; ?>
     </body>
 </html>
