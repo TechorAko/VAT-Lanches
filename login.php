@@ -14,7 +14,7 @@
 
     if(isset($_SESSION["codigocliente"])) { header("Location: index.php"); die(); }
 
-    if(isset($_REQUEST["signin"])) {
+    if(isset($_POST["login"])) {
 
         $sql = "SELECT codigocliente, nome, cpf FROM tblcliente WHERE cpf = '". $_POST["login"] ."'";
         $result = $con->query($sql);
@@ -32,23 +32,34 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Entrar :: Administração - VAT Lanches</title>
+        <title>Entrar - VAT Lanches</title>
         <link rel="stylesheet" href="style.css">
         <meta charset="UTF-8">
+        <?php include_once 'bibliotecas/bootstrap.html'; ?>
     </head>
-    <body style="text-align: center;">
-        <?php include 'assets/header.php'; ?>
-        <br>
-        <form action="login.php" method="POST">
-            <fieldset style="margin: auto; width: 30%;">
-                <legend> Entre em sua conta </legend>
-                <div style="height: 50px;"></div>
-                <label>CPF: </label><input type="text" name="login" maxlength="19" placeholder="Digite o seu CPF"><br>
-                <div style="height: 50px;"></div>
-                <input type="submit" name="signin" value="Entrar">
-            </fieldset>
-        </form>
-        <p>Não está logado ainda? Cadastre-se <a href="perfil.php">aqui</a> agora.</p>
+    <body class="bg-lightgray">
+        <?php $header_block = TRUE; include 'assets/header.php'; ?>
+        <div class="container bg-light my-sm-5 p-3">
+            <div class="row d-flex justify-content-center">
+                <h1>Entre em sua conta</h1>
+            </div>
+            <div class="row d-flex justify-content-center m-5">
+                <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
+                    <div class="form-group row">
+                        <label for="cpf" class="col-2 col-form-label">CPF:</label>
+                        <div class="col">
+                            <input type="text" class="form-control" name="login" id="cpf" placeholder="xxx.xxx.xxx-xx">
+                        </div>
+                    </div>
+                    <div class="form-group row d-flex justify-content-center">
+                        <button type="submit" class="btn btn-secondary">Entrar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <p class="d-flex justify-content-center">Não está logado ainda? Cadastre-se <a href="perfil.php" class="ml-1"> aqui </a>.</p>
+            </div>
+        </div>
         <?php $footer_fixed = "fixed"; include 'assets/footer.php'; ?>
     </body>
 </html>
