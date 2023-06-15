@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 05-Maio-2023 às 20:05
--- Versão do servidor: 10.4.22-MariaDB
--- versão do PHP: 8.1.2
+-- Generation Time: Jun 15, 2023 at 03:26 AM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `vatlanches`
+-- Database: `vatlanches`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `tblcliente`
+-- Table structure for table `tblcliente`
 --
 
 CREATE TABLE `tblcliente` (
@@ -37,11 +37,11 @@ CREATE TABLE `tblcliente` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Extraindo dados da tabela `tblcliente`
+-- Dumping data for table `tblcliente`
 --
 
 INSERT INTO `tblcliente` (`codigocliente`, `nome`, `cpf`, `email`, `telefone`, `endereco`) VALUES
-(1, 'Letícia Hannah', '123.456.789-12', 'leticiahannah@hotmail.com', '+55 (32) 1234-5678', 'Rua Machado Cortando Árvore da Silva Pereira'),
+(1, 'Letícia Hanna', '123.456.789-1', 'leticiahannah@hotmail.co', '+55 (32) 1234-567', 'Rua Machado Cortando Árvore da Silva Pereir'),
 (2, 'Otávio Bigogno', '123.456.789-12', 'otaviobigogno@gmail.com', '+55 (32) 1234-5678', 'Rua Maria Não Sei Das Quantas Jesuis'),
 (3, 'Leonardo Lacerda', '219.876.654-43', 'leonardolacerda@hotmail.com', '+55 (32) 9876-5432', 'Rua Onde O Judas Perdeu As Botas Da Minha Perspectiva'),
 (5, 'Gabriel Cavalhiere', '152.238.126-03', 'gabrielcavalhiere2@gmail.com', '+55 (32) 99127-7540', 'Rua São Francisco Almeida Gama');
@@ -49,7 +49,7 @@ INSERT INTO `tblcliente` (`codigocliente`, `nome`, `cpf`, `email`, `telefone`, `
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `tblencomenda`
+-- Table structure for table `tblencomenda`
 --
 
 CREATE TABLE `tblencomenda` (
@@ -60,16 +60,18 @@ CREATE TABLE `tblencomenda` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Extraindo dados da tabela `tblencomenda`
+-- Dumping data for table `tblencomenda`
 --
 
 INSERT INTO `tblencomenda` (`codigoencomenda`, `codigocliente`, `data`, `status`) VALUES
-(3, 1, '2023-05-04 17:25:28', 'Em processamento');
+(29, 5, '2023-05-06 05:17:55', 'Em andamento'),
+(31, 5, '2023-05-11 03:30:59', 'Em processamento'),
+(32, 5, '2023-06-13 20:41:36', 'Enviado');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `tblitens`
+-- Table structure for table `tblitens`
 --
 
 CREATE TABLE `tblitens` (
@@ -80,56 +82,62 @@ CREATE TABLE `tblitens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Extraindo dados da tabela `tblitens`
+-- Dumping data for table `tblitens`
 --
 
 INSERT INTO `tblitens` (`codigoitem`, `codigoencomenda`, `codigoproduto`, `quantidade`) VALUES
-(1, 3, 1, 1),
-(2, 3, 2, 1),
-(3, 3, 3, 1);
+(61, 29, 1, 1),
+(62, 29, 2, 2),
+(66, 29, 4, 1),
+(67, 29, 5, 1),
+(68, 31, 1, 1),
+(69, 31, 3, 1),
+(70, 32, 2, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `tblproduto`
+-- Table structure for table `tblproduto`
 --
 
 CREATE TABLE `tblproduto` (
   `codigoproduto` int(11) NOT NULL,
   `categoria` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `descricao` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `preco` decimal(7,2) NOT NULL
+  `preco` decimal(7,2) NOT NULL,
+  `foto` varchar(2048) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Extraindo dados da tabela `tblproduto`
+-- Dumping data for table `tblproduto`
 --
 
-INSERT INTO `tblproduto` (`codigoproduto`, `categoria`, `descricao`, `preco`) VALUES
-(1, 'Bebida', 'Coca-Cola', '9.90'),
-(2, 'Lanche', 'Misto Quente', '4.49'),
-(3, 'Sobremesa', 'Açai', '14.90'),
-(4, 'Bebida', 'Fanta Laranja', '8.49');
+INSERT INTO `tblproduto` (`codigoproduto`, `categoria`, `descricao`, `preco`, `foto`) VALUES
+(1, 'Bebida', 'Coca-Cola', '9.90', 'http://localhost/TechorAko/VAT-Lanches/assets/produto_foto/569807836687.png'),
+(2, 'Lanche', 'Misto Quente', '4.49', 'http://localhost/TechorAko/VAT-Lanches/assets/produto_foto/6588706588521.png'),
+(3, 'Sobremesa', 'Açai', '14.90', 'http://localhost/TechorAko/VAT-Lanches/assets/produto_foto/3514464060828.png'),
+(4, 'Bebida', 'Fanta Laranja', '8.49', 'http://localhost/TechorAko/VAT-Lanches/assets/produto_foto/9396432479347.png'),
+(5, 'Lanche', 'Cachorro Quente', '6.59', 'http://localhost/TechorAko/VAT-Lanches/assets/produto_foto/1914691969305.png');
 
 --
--- Índices para tabelas despejadas
+-- Indexes for dumped tables
 --
 
 --
--- Índices para tabela `tblcliente`
+-- Indexes for table `tblcliente`
 --
 ALTER TABLE `tblcliente`
   ADD PRIMARY KEY (`codigocliente`);
 
 --
--- Índices para tabela `tblencomenda`
+-- Indexes for table `tblencomenda`
 --
 ALTER TABLE `tblencomenda`
   ADD PRIMARY KEY (`codigoencomenda`),
   ADD KEY `fk_tblencomenda_tblcliente` (`codigocliente`);
 
 --
--- Índices para tabela `tblitens`
+-- Indexes for table `tblitens`
 --
 ALTER TABLE `tblitens`
   ADD PRIMARY KEY (`codigoitem`),
@@ -137,51 +145,51 @@ ALTER TABLE `tblitens`
   ADD KEY `fk_tblitens_tblproduto` (`codigoproduto`);
 
 --
--- Índices para tabela `tblproduto`
+-- Indexes for table `tblproduto`
 --
 ALTER TABLE `tblproduto`
   ADD PRIMARY KEY (`codigoproduto`);
 
 --
--- AUTO_INCREMENT de tabelas despejadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de tabela `tblcliente`
+-- AUTO_INCREMENT for table `tblcliente`
 --
 ALTER TABLE `tblcliente`
-  MODIFY `codigocliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `codigocliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT de tabela `tblencomenda`
+-- AUTO_INCREMENT for table `tblencomenda`
 --
 ALTER TABLE `tblencomenda`
-  MODIFY `codigoencomenda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `codigoencomenda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
--- AUTO_INCREMENT de tabela `tblitens`
+-- AUTO_INCREMENT for table `tblitens`
 --
 ALTER TABLE `tblitens`
-  MODIFY `codigoitem` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `codigoitem` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
--- AUTO_INCREMENT de tabela `tblproduto`
+-- AUTO_INCREMENT for table `tblproduto`
 --
 ALTER TABLE `tblproduto`
-  MODIFY `codigoproduto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `codigoproduto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- Restrições para despejos de tabelas
+-- Constraints for dumped tables
 --
 
 --
--- Limitadores para a tabela `tblencomenda`
+-- Constraints for table `tblencomenda`
 --
 ALTER TABLE `tblencomenda`
   ADD CONSTRAINT `fk_tblencomenda_tblcliente` FOREIGN KEY (`codigocliente`) REFERENCES `tblcliente` (`codigocliente`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Limitadores para a tabela `tblitens`
+-- Constraints for table `tblitens`
 --
 ALTER TABLE `tblitens`
   ADD CONSTRAINT `fk_tblitens_tblencomenda` FOREIGN KEY (`codigoencomenda`) REFERENCES `tblencomenda` (`codigoencomenda`) ON DELETE CASCADE ON UPDATE CASCADE,
